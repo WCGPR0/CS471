@@ -1,0 +1,256 @@
+(* Homework Assignment 7
+   Programming Languages
+   CS471, Spring 2016
+   Binghamton University 
+   Group Members: *)
+
+(* <h1>Instructions</h1> *)
+
+(* This section deals with general submission instructions.
+NEW: You are allowed to work in groups for this assignment. If you are working in a group, you MUST indicate your group members in the assignment header --- there has been a 'Group Members:' section added --- otherwise leave it blank. In additional, each group member must submit the assignment --- this is done for record keeping purposes and to ease grading. You will all receive the same grade.
+
+
+First, grab this assignment's <a href="hw7.asn">template source file</a>. To make things easier for everyone it will contain all questions with space to answer them inside the file. You must submit all answers in this file: Any external code that is required to complete a question should be included in this file as well. NOTE: You don't have to answer inside comments for this assignment. Just place an answer in the templated between questions.
+
+You must tar and gzip your submission, which should include this file along with any code required to complete the assignment. You should name the tarball with your bmail name: The following sequence of commands should be adequate to create and tar a directory of your work -- simply replace 'acanino1' with your bmail name.
+*)
+mkdir hw7
+cd hw7
+mv PATH_TO_ASN_FILE .
+tar -cvvf acanino1_hw7.tar *
+gzip acanino1_hw7.tar
+
+(* Please follow these instructions. If anything confuses you, please send me an email and I will clarify. *)
+
+(* <h1>Homework 6</h1> *)
+
+(* Due: Tuesday 3/22 at 11:59 PM *)
+
+(* <h3>Problem 1:</h3> 
+Compile and run <a href="hw7.c">hw7.c</a>: <code>gcc -S hw7.c</code>. What happens when you run this code? Depending on the target machine and the compiler, this code will execute differently.  Sometimes this code goes into an infinite loop, sometimes this code terminates, sometimes this code cause a segmentation error.  Can you explain why this code does not behavior consistently?  Think in terms of the AR and the runtime stack. *)
+
+(* <h4>Problem 1 Answer:</h4> *)
+
+In C, pre/post increment and decrement are undefined as to when exactly these operations occur. Since there is no intervening sequence point, different compilers will have different results and hence why it could be a possible infinite while loop.
+
+(* <h3>Problem 2:</h3> 
+The C programming language distinguishes between a <i>declaration</i> and <i>definition</i>.
+1. What is the difference between a declaration and definition?
+2. Which of the following are declarations and which are definitions?
+  a. char * a ;
+  b. struct * S ;
+  c. struct S1 { int x;}
+  d. typedef  int * string;
+  e. int foo(int i);
+  f. static double x[10];
+  g. void function() { } *) 
+
+(* <h4>Problem 2 Answer:</h4> *)
+
+A declaration describes the type, such as object or function, and identifies it. It is mostly for compilers to know what kind of references are possible to that identifier. A definition is the actual implementation of these identifiers, and it is mostly for linkers to link references to it.
+ a. Declaration
+ b. Declaration
+ c. Definition
+ d. Definition
+ e. Declaration
+ f. Declaration
+ g. Definition
+
+(* <h3>Problem 3:</h3> 
+Page 169 Exercise 3.5
+
+As noted inSection 3.6.3, C# has unusually sophisticated support for first- class subroutines. Among other things, it allows delegates to be instantiated from anonymous nested methods, and gives local variables and parameters unlimited extent when they may be needed by such a delegate. Consider the implications of these features in the following C# program.
+         using System;
+         public delegate int UnaryOp(int n);
+            // type declaration: UnaryOp is a function from ints to ints
+         public class Foo {
+             static int a = 2;
+             static UnaryOp b(int c) {
+                 int d = a + c;
+                 Console.WriteLine(d);
+                 return delegate(int n) { return c + n; };
+             }
+             public static void Main(string[] args) {
+                 Console.WriteLine(b(3)(4));
+             }
+}
+ *)
+
+(* <h4>Problem 3 Answer:</h4> *)
+
+The first Console.WriteLin prints d found in UnaryOp(int), which is a + c. Since we passed 3 in as 3, and a is 2, this'll evaluate to 5. The second Console.WriteLine is the return value of the UnaryOp(int) function, but the delegate function returns a function object, delegate, which we then pass 4 into it. It will return c + n, which we know n to be 4, and print it from the main function. Now because the function is static, it doesn't mean the data members are - in fact, they are allocated onto the heap. Which means delegate could access c, which we passed in as 3. The static functions Main, UnaryOp, and variable a could be statically allocated. Variable c must be allocated on the heap as previously mentioned. Lastly, the variable d will be allocated onto the stack.
+
+The resulting output is:
+5
+7
+
+(* <h3>Problem 4:</h3> 
+Page 279 Exercise 6.1 *)
+
+We noted in Section 6.1.1 that most binary arithmetic operators are left- associative in most programming languages. In Section 6.1.4, however, we also noted that most compilers are free to evaluate the operands of a binary operator in either order. Are these statements contradictory? Why or why not?
+
+(* <h4>Problem 4 Answer:</h4> *)
+
+These statements are not contradictory; a left-associative does not imply the order in which functions, or subexpressions, are being called. So for example, a() + b() + c() could still be left associative in the sense => (a() + b()) + c(). But a(), b(), c() are freely able to be evaluated first in any order by the compiler.
+
+(* <h3>Problem 5:</h3> 
+Page 280 Exercise 6.5 *)
+
+In Lisp, most of the arithmetic operators are defined to take two or more arguments, rather than strictly two. Thus (* 2 3 4 5) evaluates to 120, and (- 16 9 4) evaluates to 3. Show that parentheses are necessary to disambiguate arithmetic expressions in Lisp (in other words, give an example of an expression whose meaning is unclear when parentheses are removed).
+In Section 6.1.1 we claimed that issues of precedence and associativity do not arise with prefix or postfix notation. Reword this claim to make explicit the hidden assumption.
+
+(* <h4>Problem 5 Answer:</h4> *)
+
+It would be difficult to determine how many digits that belongs to the operator without parentheses. For example consider the following * 1 2 + 3 4 5. Would the addition operator take 3, 4 or would it take 3, 4, 5? There seems to be an ambiguity here.
+
+We can add a condition to the claim in 6.1.1, such as follows: The issues of precedence and associativity do not arise with prefix or postfix notation given that each operator takes in a defined fixed number of digits.
+
+(* <h3>Problem 6:</h3> 
+Page 280 Exercise 6.7 *)
+
+Is &(&i) ever valid in C? Explain.
+
+(* <h4>Problem 6 Answer:</h4> *)
+
+No, this is not valid. This would first result in a syntax error as the compiler would treat the outer & as the unary '&' operand rather than dereference operator. Second, even the compiler understood what we're trying to do, it makes no sense to take the address of an address.
+
+(* <h3>Problem 7:</h3> 
+Why is &(&z) not legal in C? *)
+
+(* <h4>Problem 7 Answer:</h4>
+
+OMITTED.
+
+*)
+
+
+(* <h3>Problem 8:</h3> 
+Evaluate the following program fragement in C: *)
+int a = 0;       
+int b = (a++ || ++a) >= (a++ && ++a);
+printf( "%d %d", a, b );
+(* Show each evaluation step and include the value of a and b.  Finally, display the output. Remember, in Java, C and C++, && is a short circuit operator which is always evaluated left to right. The '++' and '--' operators have higher precedence than '+' . The '+', additive operator, has higher precedence than '&&'.  The '=' operator has lowest precedence. Assume all side effects occur immediately.
+
+Assume that whenever there is an option, operands are evaluated from left to right.
+
+For example: The first two steps look like
+int b = (a++ || ++a) >= (a++ && ++a)      a=0   b=?
+int b = (0 || ++a) >= (a++ && ++a)        a=1   b=? *)
+
+(* <h4>Problem 8 Answer:</h4> *)
+
+int b = (a++ || ++a) >= (a++ && ++a)	a=0	b=?
+int b = (0 || ++a) >= (a++ && ++a)	a=1	b=?
+int b = (0 || 2) >= (a++ && ++a)	a=2	b=?
+int b = 1 >= (a++ && ++a)		a=2	b=?
+int b = 1 >= (2 && ++a)			a=3	b=?
+int b = 1 >= (2 && 4)			a=4	b=?
+int b = 1 >= 1				a=4	b=1
+
+Thus the output being printed is:
+4 1
+
+(* <h3>Problem 9:</h3> 
+Problem 8, except that whenever there is an option, operands are evluated from right to left. Here is the problem repeated in full.
+
+Evaluate the following program fragement in C: *)
+int a = 0;       
+int b = (a++ || ++a) >= (a++ && ++a);
+printf( "%d %d", a, b );
+(* Show each evaluation step and include the value of a and b.  Finally, display the output. Remember, in Java, C and C++, && is a short circuit operator which is always evaluated left to right. The '++' and '--' operators have higher precedence than '+' . The '+', additive operator, has higher precedence than '&&'.  The '=' operator has lowest precedence. Assume all side effects occur immediately.
+
+Assume that whenever there is an option, operands are evaluated from right to left.
+
+For example: The first two steps look like
+int b = (a++ || ++a) >= (a++ && ++a)      a=0   b=?
+int b = (a++ || ++a) >= (0 && ++a)        a=1   b=? *)
+
+(* <h4>Problem 9 Answer:</h4> *)
+int b = (a++ || ++a) >= (a++ && ++a)    a=0     b=?
+int b = (a++ || ++a) >= (0 && ++a)      a=1     b=?
+int b = (a++ || ++a) >= (0 && 2)        a=2     b=?
+int b = (a++ || ++a) >= 0	        a=2     b=?
+int b = (2 || ++a) >= 0        		a=3     b=?
+int b = (2 || 4) >= 0		        a=4     b=?
+int b = 1 >= 0			        a=4     b=1
+
+Thus the output being printed is also:
+4 1
+
+
+Note: In Java, C, and C++, the || operator is also a short circuit operator and always evaluated left to right.
+
+(* <h3>Problem 10:</h3> 
+Python 3 has two built-in sequence types: <i>tuple</i>, immutable sequence and <i>list</i>, mutable sequence. The language provides <i>for</i> loop to iterate through items in any sequence.
+
+The following snippet prints out each item in <code>lst</code> with its sequence number. *)
+i = 0
+for item in lst :
+    i = i+1
+    print (repr(i) + " " + repr(item))
+(* a. Briefly explain the results of the following statements:
+1. <code>seq = [1,2] + [1,2]</code>
+2. <code>seq = (1,2) +(1,2)</code>
+3. <code>seq = [1,2] + (1,2)</code>
+
+b. Draw a memory diagrahm of the following after each statement is executed:
+1. <code>A = [(11,2),[1,2],99]</code>
+2. <code>B = [1, A, 99]</code>
+3. <code>A[1] = 77</code>
+
+c. Write a python <a href="https://wiki.python.org/moin/Generators">generator</a> called 'gen' that generates the following sequence:<code>[1,2], [3,4], [5,6]</code>.
+
+d. What is the purpose of the functions <i>list</i> and <i>iter</i>?
+
+e. Will the script (above 'a') work if <code>lst</code> is a list?  Will this script work if <code>lst</code> is a tuple?  Will this script work if <code>lst</code> is created by a generator? If it work for more than one type without modification briefly explain why.  If it doesn't work can you modify the code so it work for  all three types -- What problems do you encounter? *)
+
+(* <h4>Problem 10 Answer:</h4> *)
+
+a)
+	1. This will print [1,2,1,2], as it will append([1,2]) to [1,2]
+	2. This will print (1,2,1,2), as it will append((1,2)) to (1,2)
+	3. This will result in an error as you are trying to concatenate a tuple to a list. Consider using extends by appending iteratively
+
+
+b)
+	1.
+	Global Frame	|	Objects (List)		
+		A	|	?		 ?	99
+			       \|/	        \|/
+			     \|/	 	  \|/
+		|	11	2	|	1	2	|	
+	
+
+	2.
+	Global Frame	|	Objects (List)
+		B	|	1	?	99
+				       \|/
+					A	|	?		 ?	99
+						       \|/	        \|/
+						    \|/	 	 	   \|/
+					|	11	2	|	1	2	|
+	3.
+	Global Frame	|	Objects (List)
+		B	|	1	?	99
+				       \|/
+					A	|	?		 77	99
+						       \|/	       
+						    \|/	 	
+					|	11	2
+	
+			
+				
+c)
+	def gen(n):
+		num = 1
+		while num < n:
+			yield [num,num+1]
+			num += 2
+
+	for i in gen(6):
+	    print(i)
+
+d)
+	The function iter returns an iterator object, while list returns an ordered list of items as iterable's items. Since list is a mutable sequence type and is iterable, iter can be used for iterating through the list. Also note that iterable is different than an iterator; iterable classes implements both __iter__() and __next__(), while __iter__() return self.
+e)
+	Yes, the script above will work for lists and tuples, and even for generators. While the generator results are transient, the results generated are the same as a normal sequence.

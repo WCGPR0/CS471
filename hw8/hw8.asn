@@ -1,0 +1,266 @@
+(* Homework Assignment 8
+   Programming Languages
+   CS471, Spring 2016
+   Binghamton University 
+   Group Members: *)
+
+(* <h1>Instructions</h1> *)
+
+(* This section deals with general submission instructions.
+NEW: You are allowed to work in groups for this assignment. If you are working in a group, you MUST indicate your group members in the assignment header --- there has been a 'Group Members:' section added --- otherwise leave it blank. In additional, each group member must submit the assignment --- this is done for record keeping purposes and to ease grading. You will all receive the same grade.
+
+
+First, grab this assignment's <a href="hw8.asn">template source file</a>. To make things easier for everyone it will contain all questions with space to answer them inside the file. You must submit all answers in this file: Any external code that is required to complete a question should be included in this file as well. NOTE: You don't have to answer inside comments for this assignment. Just place an answer in the templated between questions.
+
+You must tar and gzip your submission, which should include this file along with any code required to complete the assignment. You should name the tarball with your bmail name: The following sequence of commands should be adequate to create and tar a directory of your work -- simply replace 'acanino1' with your bmail name.
+*)
+mkdir hw8
+cd hw8
+mv PATH_TO_ASN_FILE .
+tar -cvvf acanino1_hw8.tar *
+gzip acanino1_hw8.tar
+
+(* Please follow these instructions. If anything confuses you, please send me an email and I will clarify. *)
+
+(* <h1>Homework 8</h1> *)
+
+(* Due: Wednesday 4/7 at 11:59 PM *)
+
+(* <h1>Reading</h1> 
+Reading:
+Chapter 6:  (except 6.6.1) focus on -- 219-241, 244-245, 262-265 CYU:  1-11,12-18,19-26, 27-37
+Chapter 7 (all is pretty important) CYU: 1-10,11-19,22-25,27-29,33-35,36-43
+Chapter 8 - READ 383-410, 418-427 CYU: 1-12,13-25, 34,35
+Chapter 9 - all CYU: 1-11,14-17,20,23,25,26,29, 31-33, 35-36, 38, 39-41,43 *)
+
+(* <h3>Problem 1:</h3> 
+Page 721 Exercise 13.13: We have slightly modified the code for the problem. <a href="ruby13.rb">Use this file instead</a>.  *)
+
+(* <h4>Problem 1 Answer:</h4> *)
+Yes, since Ruby have sophisticated namespace mechanisms, but also unlimited extent for variables captured in closure, the output is:
+3
+99
+
+Commenting out the y=2 will result in a run-time error (due to Ruby's Metaprogramming) because of the scope.
+
+(* <h3>Problem 2:</h3> 
+Add two iterator methods to the Tree class in <a href="TreeModule.py">TreeModule.py</a>: preorder() is an iterator that traverses the tree object in preorder and postorder() is an iterator that traverses the tree object in postorder. TreeModule.py contains test code, but be careful, it does not cover all cases.
+
+NOTE: You do not need to place the code in this file for Problem 2. *)
+
+(* <h4>Problem 2 Answer:</h4> *)
+
+    def preorder(self):
+        """A generator for a pre-order traversal of the Tree"""
+        yield self.label
+        if self.left is not None:
+            for x in self.left:
+                yield x
+        if self.right is not None:
+            for x in self.right:
+                yield x   
+        
+  
+
+    def postorder(self):
+        """A generator for a post-order traversal of the Tree"""
+        if self.left is not None:
+            for x in self.left:
+                yield x
+        if self.right is not None:
+            for x in self.right:
+                yield x
+        yield self.label
+
+(* <h3>Problem 3:</h3> 
+In the previous question you were asked to create preorder and postorder iterators in Python using the 'yield' construct. Now you need to write and iterator for a binary tree in C that performs an inorder traversal of a given tree.
+
+Unlike Python and Ruby, there is no special syntax to do this. The iterator must be implemented by hand. You may use <a href="TreeIter.c">TreeIter.c</a> as a template. Compile the code with:<code>gcc -std=c99 TreeIter.c</code>. You must define TreeIterCreate, TreeIterDelete, TreeIterVal, TreeIterNext, and TreeIterDone. The sample driver in the main function shows the expected behavior of the iterator object.
+
+Hint: An inorder traversal always "visits" the left most node in a binary tree first. This will make a good starting point to begin the traversal for the iterator. After that next node visited is visit your "inorder successor" (great term to google). 
+
+NOTE: You do not need to place the code in this file for Problem 3. *)
+
+(* <h4>Problem 3 Answer:</h4> *)
+
+typedef struct _TreeIter {
+    Node *next;
+} TreeIter;
+
+TreeIter* TreeIterCreate(Tree *tree) {
+   TreeIter* treeIter = malloc(sizeof(TreeIter()));
+   treeIter->next = tree->root;
+   return treeIter;
+}
+
+void TreeIterDelete(TreeIter *iter) {
+    free(iter);
+}
+
+int TreeIterDone(TreeIter *iter) {
+    return iter->next->left != NULL && iter->next->right != NULL;
+}
+
+void TreeIterNext(TreeIter *iter) {
+    Node* node = iter->next;
+    if (node->right != NULL) {
+        iter->next = node->right;
+    } else if (node->left != NULL) {
+        iter->next = node->left;
+    }
+    else iter->next = node->parent;
+}
+
+int TreeIterVal(TreeIter *iter) {
+    return iter->next->val;
+}
+
+
+
+
+(* <h3>Problem 4:</h3> 
+C++ and Java loops are often written with empty bodies by placing all side effects into the tests, such as in the following two examples: *)
+i = 0;
+while (a[i++] !=0);
+
+for (i = 0; a[i] != 0; i++);
+(* Are these loops equivalent? Explain. *)
+
+(* <h4>Problem 4 Answer:</h4> *)
+
+No, these loops are not equivalent. The while loop is incremented in count before the for loop by one. Furthmore, compilers could try to optimize loops like these - so you really can't tell.
+
+
+(* <h3>Problem 5:</h3> 
+Suppose we wrote the following try block in C++: *)
+try {
+  // do something
+} 
+catch (...) {cout << "general error!";}
+catch (range_error) {cout << "range error!";}
+(* Is there anything wrong with the code? *)
+
+(* <h4>Problem 5 Answer:</h4> *)
+
+
+There is nothing, compiling sense, wrong with the code but it does a flaw in the programming sense; this try catch will catch all the generic errors, and the range_error included.
+This means that specific errors will not be caught, and are just extra code. Placing these speciailized errors ahead of the generic ones will resolve this error.
+
+
+(* <h3>Problem 6:</h3> 
+The following are some type and variable declarations in C syntax: *)
+typedef  struct {
+  char* pt;
+  int a;
+} RecA;
+
+typedef struct {
+  char* pt;
+  int a;
+} RecB;
+
+typedef RecB RecC;
+
+RecA w;
+RecB x;
+RecC y, z;
+(* State which variables are type equivalent under (a) structural equivalence, (b) nominal equivalence, and (c) C's equivalence. *)
+
+(* <h4>Problem 6 Answer:</h4> *)
+
+RecA and ReB are structural equivalence. (the obvious: y and z, a and a, pt and pt, are structural equivalence. and hence w and x)
+
+RecB, RecC are nomial equivalence, y, z are nomial equivalence. 
+
+In C's equivalance, structural equivalence is used (minus structs) therefore they're all C's equivalence.
+
+
+(* <h3>Problem 7:</h3> 
+Given the following C++ declarations: *)
+double* dp = new double(3);
+void* vp;
+int* ip;
+(* Which of the following assignments does the compiler complain about? *)
+vp = dp;
+dp = vp;
+ip = dp;
+dp = ip;
+ip = vp;
+
+ip = (int*) vp;
+ip = static_cast<int*>(vp);
+ip = static_cast<int*>(dp);
+ip = reinterpret_cast<int*>(dp);
+
+(* <h4>Problem 7 Answer:</h4> *)
+Compiler will complain about the following:
+dp = vp; -- Assigning a void pointer to a double pointer
+ip = dp; -- Assigning a double pointer to an int pointer
+dp = ip; -- Assigning an int pointer to a double pointer
+ip = vp -- Assigning a void pointer to an int pointer
+ip = static_cast<int*>(dp; -- Static casting a double pointer to an int pointer
+
+
+(* <h3>Problem 8:</h3> 
+Suppose we have the following function signatures --- Assume they are fully defined functions: *)
+1. int pow(int,int);
+2. double pow(double, double);
+3. double pow(int, double);
+(* Given the languages (a) C++ and (b) Java 5, (c) Java 8, write down the number of pow function called in each of the 8 calls, or write "illegal" if a call cannot be resolved in the language, or if a data type conversion cannot be made, for the following code: *)
+int x;
+double y;
+x = pow(2,3);
+y = pow(2,3);
+x = pow(2,3.2);
+y = pow(2,3.2);
+x = pow(2.1,3);
+y = pow(2.1,3);
+x = pow(2.1,3.2);
+y = pow(2.1,3.2);
+ 
+(* <h4>Problem 8 Answer:</h4> *)
+In C++,
+x = pow(2,3); calls the first one
+y = pow(2,3); calls the first one
+x = pow(2,3.2); calls the third one
+y = pow(2,3.2); calls the third one
+x = pow(2.1,3); is illegal (ambigious)
+y = pow(2.1,3); is illegal (ambigious
+x = pow(2.1,3.2); calls the second one
+y = pow(2.1,3.2); calls the second one
+
+In both Java 5 and Java 8,
+x = pow(2,3); calls the first one
+y = pow(2,3); calls the first one
+x = pow(2,3.2); is illegal (incompatible types, double to int)
+y = pow(2,3.2); calls the third one
+x = pow(2.1,3); is illegal (incompatible types, double to int)
+y = pow(2.1,3); calls the second one
+x = pow(2.1,3.2); is illegal (incompatible types, double to int)
+y = pow(2.1,3.2); calls the second one
+
+(* <h3>Problem 9:</h3> 
+Page 376 Exercise 7.15 *)
+
+(* <h4>Problem 9 Answer:</h4> *)
+
+struct {
+int n;
+char c;
+} A[10][10];
+
+We know there are 8 bits in a char. We know there are 32 bits in an int given a 32-bit Pentium machine.
+
+If the address at A[0][0] is 1000 (decimal), then the address of A[3][7] would be 1296. 
+
+
+(* <h3>Problem 10:</h3> 
+Page 378 Exercise 7.20. <a href="http://unixwiz.net/techtips/reading-cdecl.html">Reading C type declarations</a> *)
+
+(* <h4>Problem 10 Answer:</h4> *)
+Assuming n is a valid integer to be replaced, the following declarations mean the following:
+double *a[n]; -- A n sized array of pointers to type double
+double (*b)[n]; -- A pointer to n sized array of type double
+double (*c[n])(); -- A n sized array of pointers to function returning type double
+double (*d())[n]; -- A function returning a pointer to a n sized array of type double
+
