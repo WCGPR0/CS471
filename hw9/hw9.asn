@@ -1,0 +1,114 @@
+(* Homework Assignment 9
+   Programming Languages
+   CS471, Spring 2016
+   Binghamton University 
+   Group Members: *)
+
+(* <h1>Instructions</h1> *)
+
+(* This section deals with general submission instructions.
+NEW: You are allowed to work in groups for this assignment. If you are working in a group, you MUST indicate your group members in the assignment header --- there has been a 'Group Members:' section added --- otherwise leave it blank. In additional, each group member must submit the assignment --- this is done for record keeping purposes and to ease grading. You will all receive the same grade.
+
+
+First, grab this assignment's <a href="hw9.asn">template source file</a>. To make things easier for everyone it will contain all questions with space to answer them inside the file. You must submit all answers in this file: Any external code that is required to complete a question should be included in this file as well. NOTE: You don't have to answer inside comments for this assignment. Just place an answer in the templated between questions.
+
+You must tar and gzip your submission, which should include this file along with any code required to complete the assignment. You should name the tarball with your bmail name: The following sequence of commands should be adequate to create and tar a directory of your work -- simply replace 'acanino1' with your bmail name.
+*)
+mkdir hw9
+cd hw9
+mv PATH_TO_ASN_FILE .
+tar -cvvf acanino1_hw9.tar *
+gzip acanino1_hw9.tar
+
+(* Please follow these instructions. If anything confuses you, please send me an email and I will clarify. *)
+
+(* <h1>Homework 9</h1> *)
+
+(* Due: Wednesday 4/13 at 11:59 PM *)
+
+(* <h1>Reading</h1> 
+Reading:
+Chapter 6:  (except 6.6.1) focus on -- 219-241, 244-245, 262-265 CYU:  1-11,12-18,19-26, 27-37
+Chapter 7 (all is pretty important) CYU: 1-10,11-19,22-25,27-29,33-35,36-43
+Chapter 8 - READ 383-410, 418-427 CYU: 1-12,13-25, 34,35
+Chapter 9 - all CYU: 1-11,14-17,20,23,25,26,29, 31-33, 35-36, 38, 39-41,43 *)
+
+(* <h3>Problem 1:</h3> 
+Page 442 Exercise 8.14: Provide details on how you arrived at your answer. *)
+
+(* <h4>Problem 1 Answer:</h4> *) 
+
+(* <h3>Problem 2:</h3> 
+Given the following C++ code: *)
+const int k = ???; // you need to figure out the value of ???
+int *i = 0;
+struct A {
+  int x[k];
+};
+A* a = 0;
+printf("%d %d %d %d %d %d\n", i+1, i+k, k, a+k, &(a[9]), &(a[9])-(a+1));
+(* When run, the code snippet outputs <code>4 8</code> for the first two format specifiers. List the remaining output and explain. Pay attention to coercion *)
+
+(* <h4>Problem 2 Answer:</h4> *)
+
+
+The output when k is 2, is 4 8 2 16 72 8.
+
+Following the third format specifier, the fourth output, 16, comes from a+k. Since we know a points to 0, and k to be 2, the size of integer is 8 => 8*2 = 16.
+
+The fifth output, 72, comes from &(a[9]) which is equivalently a+9, and the size of integer is 8 => 8*9 = 72.
+
+the sixth output, 8, comes from &(a[9])-(a+1) which is equivalently a+9 - a+1 = 8.
+
+(* <h3>Problem 3:</h3> 
+Given the following C function and macro definition: *)
+#define SQUARE(x) x*x
+int squaref (int x) {
+  return x * x;
+}
+(* a. What is the result of <code>squaref(3)</code>?
+b. What is the result of <code>SQUARE(3)</code>?
+c. Give an example input that causes <code>squaref</code> and <code>SQUARE</code> to compute different values? *)
+
+(* <h4>Problem 3 Answer:</h4> *)
+The result of squaref(3) is 9, and the result of SQUARE(3) is also 9.
+An example of a x in which SQUARE(x) != squaref(x) is when x = 65535.
+
+(* <h3>Problem 4:</h3> 
+Given the following code snippet in C-like syntax: *)
+int A[3];
+
+int runit(){
+  i = 1;
+  A[0] = 2;
+  A[1] = 1;
+  A[2] = 0;
+  mys(i,a[i]);
+  print(i, a[0], a[1], a[2]);
+  mys(a[1],a[i]);
+  print(i, a[0], a[1], a[2]);
+  return 0;
+}
+void mys(int x, int y){
+  x = x + y;
+  y = x - y;
+  x = x - y;
+}
+(* What is the output of <code>runit</code> for each of the following parameter passing mechanisms?
+a. Pass by value.
+b. Pass by reference.
+c. Pass by value-result.
+d. Pass by macro expansion.
+e. Pass by name. *)
+
+(* <h4>Problem 4 Answer:</h4> *)
+
+(* <h3>Problem 5:</h3> 
+Page 497 Exercise 9.17: Explain the representation of the <code>Bar</code> object code in C++ and Java *)
+
+(* <h4>Problem 5 Answer:</h4> *)
+
+(* <h3>Problem 6:</h3> 
+Page 498 Exercise 9.21: In addition, explain why this isn't an issue in Java. *)
+
+(* <h4>Problem 6 Answer:</h4> *)
